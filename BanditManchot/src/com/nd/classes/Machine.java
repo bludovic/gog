@@ -54,6 +54,8 @@ public class Machine implements Runnable {
 					this.displayWinnings();
 				}
 			}
+
+			// Waitint
 			while (!restart) {
 				try {
 					Thread.sleep(200);
