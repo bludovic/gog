@@ -1,3 +1,4 @@
+
 package com.nd.exceptions;
 
 public class BetException extends Exception {
