@@ -7,9 +7,10 @@ public class Wheel implements IAction {
 	private boolean	rolling	= false, slowingDown = false;
 	private int		result	= 0;
 	private double	speed	= 1;
-
+	
 	@Override
 	public void run() {
+
 		this.speed = 1;
 		this.rolling = true;
 		this.slowingDown = false;
@@ -26,12 +27,13 @@ public class Wheel implements IAction {
 			}
 		}
 		this.rolling = false;
-	}
+
+		}
+
 
 	@Override
 	public void start() {
 	}
-
 	@Override
 	public void stop() {
 		this.slowingDown = true;
@@ -53,5 +55,4 @@ public class Wheel implements IAction {
 	public void setRolling(boolean rolling) {
 		this.rolling = rolling;
 	}
-
 }

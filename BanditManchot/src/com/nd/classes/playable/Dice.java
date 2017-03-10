@@ -5,19 +5,20 @@ import com.nd.interfaces.IAction;
 public class Dice implements IAction {
 
 	private boolean	rolling	= false, slowingDown = false;
-	private int		result	= 1;
+	private int		result	= 0;
 	private double	speed	= 1;
-
+	
 	@Override
 	public void run() {
+
 		this.speed = 1;
 		this.rolling = true;
 		this.slowingDown = false;
 
 		while (speed > 0.125) {
-			this.result = (int) (Math.random() * 6 + 1);
+			result = (int) (Math.random() * 6 + 1);
 			if (slowingDown) {
-				this.speed /= 2;
+				speed /= 2;
 			}
 			try {
 				Thread.sleep((long) (250 / speed));
@@ -26,13 +27,12 @@ public class Dice implements IAction {
 			}
 		}
 		this.rolling = false;
+
 	}
 
 	@Override
 	public void start() {
-		this.run();
 	}
-
 	@Override
 	public void stop() {
 		this.slowingDown = true;
@@ -54,4 +54,5 @@ public class Dice implements IAction {
 	public void setRolling(boolean rolling) {
 		this.rolling = rolling;
 	}
+
 }

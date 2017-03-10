@@ -14,7 +14,7 @@ public class Parameters {
 	private int						numberPlayable;
 	private double					maximumBet;
 	private String					playableName;
-	private Constructor<IAction>	constructor	= null;
+	private Constructor<IAction>	constructor		= null;
 
 	public Parameters() {
 	}
@@ -22,9 +22,8 @@ public class Parameters {
 	public void getParameters() {
 		Class<IAction> playableClass;
 		try {
-			Class<?> classe = Class.forName("com.nd.classes.playable." + playableName);
-			playableClass = (Class<IAction>) classe;
-			this.constructor = playableClass.getConstructor();
+			playableClass = (Class<IAction>) Class.forName("com.nd.classes.playable." + playableName);
+			constructor = playableClass.getConstructor();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
@@ -34,6 +33,7 @@ public class Parameters {
 		}
 
 	}
+
 
 	public int getNumberPlayable() {
 		return numberPlayable;

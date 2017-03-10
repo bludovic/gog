@@ -1,3 +1,4 @@
+
 package com.nd.exceptions;
 
 public class BetException extends Exception {
@@ -6,7 +7,6 @@ public class BetException extends Exception {
 
 	public BetException(String str) {
 		super(str);
-		// lolhfgh
 	}
 
 }

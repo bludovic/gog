@@ -11,15 +11,8 @@ public class Player {
 		this.amount = amount;
 	}
 
-	public void play(Machine machine) {
-		System.out.println("Bonjour " + firstName + " " + name);
-		machine.setPlayer(this);
-		Thread t = new Thread(machine);
-		t.start();
-	}
-
 	public double getAmount() {
-		return amount;
+		return this.amount;
 	}
 
 	public void setAmount(double amount) {
@@ -27,7 +20,7 @@ public class Player {
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public void setName(String name) {
@@ -35,7 +28,7 @@ public class Player {
 	}
 
 	public String getFirstName() {
-		return firstName;
+		return this.firstName;
 	}
 
 	public void setFirstName(String firstName) {
