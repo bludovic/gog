@@ -6,7 +6,6 @@ public class BetException extends Exception {
 
 	public BetException(String str) {
 		super(str);
-		// lolhfghfghvgdfggfgdfg
 	}
 
 }

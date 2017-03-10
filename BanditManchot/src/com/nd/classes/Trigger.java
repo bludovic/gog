@@ -4,8 +4,7 @@ import java.util.Scanner;
 
 public class Trigger extends Thread {
 
-	private Machine	machine;
-	private Scanner	sc;
+	private Machine machine;
 
 	public Trigger(Machine machine) {
 		this.machine = machine;
@@ -14,10 +13,10 @@ public class Trigger extends Thread {
 	@Override
 	public void run() {
 
-		while (true) {
-			sc = new Scanner(System.in);
-			sc.nextLine();
-			machine.triggerNextPlayable();
+		for (int i = 0; i < machine.getParam().getNumberPlayable(); i++) {
+			this.machine.setSc(new Scanner(System.in));
+			this.machine.getSc().nextLine();
+			this.machine.triggerNextPlayable();
 		}
 	}
 

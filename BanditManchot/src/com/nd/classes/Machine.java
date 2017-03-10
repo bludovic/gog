@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Scanner;
 
 import com.nd.classes.parameters.Parameters;
 import com.nd.exceptions.BetException;
@@ -13,74 +14,90 @@ public class Machine implements Runnable {
 
 	private List<IAction>	playable	= new ArrayList<>();
 	private List<Thread>	threads		= new ArrayList<>();
-	private boolean			running		= true;
-	private boolean			playing		= true;
-	private boolean			restart		= false;
+	private boolean			running, playing = true;
 	private Parameters		param;
-	private double			bet;
 	private Player			player;
+	private double			bet;
+	private Scanner			sc;
 
 	public Machine(Parameters param) {
 		this.param = param;
-		setPlayable();
+		this.setPlayable();
 	}
 
 	@Override
 	public void run() {
 
-		while (playing) {
+		System.out.println("Bonjour " + this.player.getFirstName() + " " + this.player.getName());
 
-			System.out.println("Vous disposez de " + player.getAmount() + " euros");
-			System.out.println("Combien souhaitez-vous miser?");
-			this.bet = betRequest();
+		while (this.playing) {
 
-			restart = false;
-			threads.clear();
-			for (int i = 0; i < playable.size(); i++) {
-				Thread thread = new Thread(playable.get(i));
-				this.threads.add(thread);
+			this.running = true;
+
+			this.betRequest();
+
+			Trigger trigger = new Trigger(this);
+			trigger.start();
+
+			this.threads.clear();
+			for (int i = 0; i < this.playable.size(); i++) {
+				this.threads.add(new Thread(this.playable.get(i)));
 				this.threads.get(i).start();
 			}
-			while (running) {
-				running = true;
+
+			while (this.running) {
 				this.display();
 				try {
 					Thread.sleep(200);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				if (!playable.get(playable.size() - 1).isRolling()) {
+				if (!this.playable.get(this.playable.size() - 1).isRolling()) {
 					this.running = false;
 					this.displayWinnings();
 				}
 			}
+			this.requestRestart();
 
-			// Waitint
-			while (!restart) {
-				try {
-					Thread.sleep(200);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+		}
+
+	}
+
+	private void requestRestart() {
+		if (player.getAmount() == 0) {
+			System.out.println("Vous êtes fauché!\nAu revoir.");
+			this.playing = false;
+			this.sc.close();
+			return;
+		}
+		String resp = "";
+		while (!(resp.toLowerCase().equals("y") || resp.toLowerCase().equals("n"))) {
+			System.out.println("Rejouer? (y/n)");
+			this.sc = new Scanner(System.in);
+			resp = this.sc.nextLine();
+
+		}
+		if (resp.toLowerCase().equals("n")) {
+			this.playing = false;
+			System.out.println("Au revoir!");
+			this.sc.close();
 		}
 	}
 
 	public void display() {
 		String values = "", linesUp = "", linesUp2 = "", linesDown = "";
-
-		for (int i = 0; i < playable.size(); i++) {
+		for (int i = 0; i < this.playable.size(); i++) {
 			linesUp = linesUp + "  ___  ";
 			linesUp2 = linesUp2 + " |   | ";
 			linesDown = linesDown + " |___| ";
-			values = values + " | " + playable.get(i).getResult() + " | ";
+			values = values + " | " + this.playable.get(i).getResult() + " | ";
 		}
 		System.out.println("\n\n\n\n\n\n\n");
 		System.out.println(linesUp);
 		System.out.println(linesUp2);
 		System.out.println(values);
 		System.out.println(linesDown);
+
 	}
 
 	private void setPlayable() {
@@ -92,100 +109,103 @@ public class Machine implements Runnable {
 					| InvocationTargetException e) {
 				e.printStackTrace();
 			}
-			playable.add(play);
+			this.playable.add(play);
 		}
 	}
 
 	public void triggerNextPlayable() {
-
-		if (running) {
-			for (int i = 0; i < param.getNumberPlayable(); i++) {
-				if (!playable.get(i).isSlowingDown()) {
-					playable.get(i).stop();
-					break;
-				}
+		for (int i = 0; i < this.param.getNumberPlayable(); i++) {
+			if (!this.playable.get(i).isSlowingDown()) {
+				this.playable.get(i).stop();
+				break;
 			}
-		} else {
-			restart = true;
-			running = true;
 		}
 	}
 
 	private void displayWinnings() {
+		int nbIdenticalResults = this.countIdenticalResults();
+		double winnings = this.calculateWinnings(nbIdenticalResults);
+		if (nbIdenticalResults == 1) {
+			System.out.println("Vous avez perdu!");
+		} else {
+			player.setAmount(this.player.getAmount() + winnings);
+			System.out.println("\n Vous avez obtenu " + nbIdenticalResults + " valeurs identiques!");
+			System.out.println("Vos gains s'élèvent à " + winnings + " euros.");
+		}
 
-		int temp, max = 1;
-		for (int i = 0; i < playable.size(); i++) {
+	}
+
+	private int countIdenticalResults() {
+		int temp, nbIdenticalResults = 1;
+		for (int i = 0; i < this.playable.size(); i++) {
 			temp = 1;
 			for (int j = 0; j < i; j++) {
-				if (playable.get(i).getResult() == playable.get(j).getResult()) {
+				if (this.playable.get(i).getResult() == this.playable.get(j).getResult()) {
 					temp++;
 				}
 			}
-			if (temp > max) {
-				max = temp;
+			if (temp > nbIdenticalResults) {
+				nbIdenticalResults = temp;
 			}
 		}
-		System.out.println("\n Vous avez obtenu " + max + " valeurs identiques!");
-		double winnings = calculateWinnings(max);
-
-		if (max > 1) {
-			System.out.println("\n Vous avez obtenu " + max + " valeur(s identiques!");
-			System.out.println("Vos gains s'élevent à " + winnings + " euros.");
-		} else {
-			System.out.println("Perdu!!!");
-		}
-
+		return nbIdenticalResults;
 	}
 
-	private double calculateWinnings(int max) {
-		double gain;
-		switch (max) {
+	private double calculateWinnings(int nbIdenticalResults) {
+		double winnings = 0;
+		switch (nbIdenticalResults) {
 		case 1:
-			gain = 0;
+			winnings = 0;
 			break;
 		case 2:
-			gain = bet * 1.5;
+			winnings = this.bet * 1.5;
 			break;
 		case 3:
-			gain = bet * 5;
+			winnings = this.bet * 5;
 			break;
 		default:
-			gain = bet * 10;
+			winnings = this.bet * 10;
 			break;
 		}
-		return gain;
+		return winnings;
 	}
 
-	private double betRequest() {
+	private void betRequest() {
+
+		System.out.println("Combien souhaitez-vous miser? (" + this.player.getAmount()
+				+ " euros sont disponibles sur votre compte)");
+
 		boolean validating = true;
-		bet = 0;
 		while (validating) {
 			validating = false;
 			try {
-
-				if (bet > this.getParam().getMaximumBet()) {
+				this.sc = new Scanner(System.in);
+				this.bet = this.sc.nextDouble();
+				if (this.bet > this.param.getMaximumBet()) {
 					throw new BetException("Le montant de votre mise dépasse le seuil autorisé (max = "
-							+ this.getParam().getMaximumBet() + " euros).");
+							+ this.param.getMaximumBet() + " euros).");
 				}
-				if (bet > player.getAmount()) {
+				if (this.bet > this.player.getAmount()) {
 					throw new BetException("Vous ne disposez pas de suffisamment de fonds.\n Il vous reste "
 							+ player.getAmount() + " euros.");
+				}
+				if (this.bet == 0) {
+					throw new BetException("Pas de mise, pas de prise...");
 				}
 
 			} catch (InputMismatchException e) {
 				validating = true;
-				System.out.println("Atteniton. veuillez entrez un nombre s'il-vous-plaît.\n");
+				System.out.println("Attention. veuillez entrer un nombre.\n");
 			} catch (BetException e) {
 				validating = true;
 				System.out.println(e.getMessage());
 			}
 		}
-		return bet;
-
+		this.player.setAmount(this.player.getAmount() - this.bet);
 	}
 
 	public Parameters getParam() {
-		return param;
+		return this.param;
 	}
 
 	public void setParam(Parameters param) {
@@ -193,14 +213,26 @@ public class Machine implements Runnable {
 	}
 
 	public double getBet() {
-		return bet;
+		return this.bet;
 	}
 
 	public void setBet(double bet) {
 		this.bet = bet;
 	}
 
-	public void setPlayer(Player joueur) {
-		this.player = joueur;
+	public Player getPlayer() {
+		return this.player;
+	}
+
+	public void setPlayer(Player player) {
+		this.player = player;
+	}
+
+	public Scanner getSc() {
+		return this.sc;
+	}
+
+	public void setSc(Scanner scanner) {
+		this.sc = scanner;
 	}
 }
