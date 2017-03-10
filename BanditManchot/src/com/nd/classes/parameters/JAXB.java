@@ -16,7 +16,7 @@ public class JAXB {
 		try {
 			jaxbContext = JAXBContext.newInstance(Parameters.class);
 			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			param = (Parameters) jaxbUnmarshaller.unmarshal(new File("c:/xml/parameters.xml"));
+			param = (Parameters) jaxbUnmarshaller.unmarshal(new File("ressources/parameters.xml"));
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<parameters>
+    <numberPlayable>4</numberPlayable>
+    <maximumBet>105</maximumBet>
+    <playableName>Wheel</playableName>
+</parameters>
