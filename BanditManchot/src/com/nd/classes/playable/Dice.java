@@ -54,10 +54,4 @@ public class Dice implements IAction {
 	public void setRolling(boolean rolling) {
 		this.rolling = rolling;
 	}
-
-	@Override
-	public boolean isPlaying() {
-		return true;
-	}
-
 }

@@ -4,7 +4,7 @@ import com.nd.interfaces.IAction;
 
 public class Wheel implements IAction {
 
-	private boolean	rolling	= false, slowingDown = false, playing = true;
+	private boolean	rolling	= false, slowingDown = false;
 	private int		result	= 0;
 	private double	speed	= 1;
 
@@ -52,11 +52,6 @@ public class Wheel implements IAction {
 
 	public void setRolling(boolean rolling) {
 		this.rolling = rolling;
-	}
-
-	@Override
-	public boolean isPlaying() {
-		return playing;
 	}
 
 }
