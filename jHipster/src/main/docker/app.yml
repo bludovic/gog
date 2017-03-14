@@ -1,0 +1,14 @@
+version: '2'
+services:
+    gog-app:
+        image: gog
+        environment:
+            - SPRING_PROFILES_ACTIVE=prod,swagger
+            - SPRING_DATASOURCE_URL=jdbc:mariadb://gog-mariadb:3306/gog
+            - JHIPSTER_SLEEP=10 # gives time for the database to boot before the application
+        ports:
+            - 8080:8080
+    gog-mariadb:
+        extends:
+            file: mariadb.yml
+            service: gog-mariadb
