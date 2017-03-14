@@ -113,6 +113,7 @@ public class Machine implements Runnable {
 		}
 	}
 
+	// method called by a trigger to stop the next rolling playable.
 	public void triggerNextPlayable() {
 		for (int i = 0; i < this.param.getNumberPlayable(); i++) {
 			if (!this.playable.get(i).isSlowingDown()) {
@@ -170,6 +171,8 @@ public class Machine implements Runnable {
 		return winnings;
 	}
 
+	// Method requesting user entry and testing its conformity. Also remove the
+	// amount of the bet from the player's account.
 	private void betRequest() {
 
 		System.out.println("Combien souhaitez-vous miser? (" + this.player.getAmount()

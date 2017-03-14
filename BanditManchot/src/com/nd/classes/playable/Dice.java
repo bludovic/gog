@@ -2,12 +2,13 @@ package com.nd.classes.playable;
 
 import com.nd.interfaces.IAction;
 
+// playable generating  random results between 1 and 6.
 public class Dice implements IAction {
 
 	private boolean	rolling	= false, slowingDown = false;
 	private int		result	= 0;
 	private double	speed	= 1;
-	
+
 	@Override
 	public void run() {
 
@@ -33,6 +34,7 @@ public class Dice implements IAction {
 	@Override
 	public void start() {
 	}
+
 	@Override
 	public void stop() {
 		this.slowingDown = true;

@@ -7,7 +7,6 @@ import com.nd.classes.parameters.Parameters;
 
 public class Main {
 
-
 	public static void main(String[] args) {
 
 		Parameters param = JAXB.importParameters();
@@ -17,11 +16,8 @@ public class Main {
 		Player player = new Player("Jack", "LaChance", 75);
 		machine.setPlayer(player);
 
-		Thread threadMachin = new Thread(machine);
-		threadMachin.start();
-
-
-
+		Thread threadMachine = new Thread(machine);
+		threadMachine.start();
 
 	}
 }
